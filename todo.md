@@ -1,9 +1,5 @@
 # TODO
 
-## VERY IMPORTANT
-- Separate github project
-- Import Seeder from mac
-
 ## Register 
 
 - Email validation (unique & valid)
