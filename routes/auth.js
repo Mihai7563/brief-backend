@@ -3,6 +3,7 @@ import pool from '../db.js';
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { requireUniqueEmail } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -36,7 +37,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', requireUniqueEmail, async (req, res) => {
 
     console.log(req.body)
     const { email, password, password_confirm } = req.body;
