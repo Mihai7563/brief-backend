@@ -1,12 +1,10 @@
-CREATE TABLE `users` (
+CREATE TABLE `roles` (
   `id` int(10) UNSIGNED NOT NULL,
-  `email` varchar(255) NOT NULL UNIQUE,
-  `password` varchar(255) NOT NULL,
-  `role_id` int(10) UNSIGNED NOT NULL
+  `name` varchar(255) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE `users`
+ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
-ALTER TABLE `users`
+ALTER TABLE `roles`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;

@@ -1,4 +1,4 @@
-// import {  } from "../utils.js";
+import { checkEmailFormat } from "../utils.js";
 import pool from "../db.js";
 
 // promitem sa o mutam cand cineva va avea nevoie inca o data de asta
@@ -20,5 +20,69 @@ export async function requireUniqueEmail(req, res, next) {
   }
 }
 
+// COMMON FUNCTION FOR BOTH REGISTER DATA VALIDATORS
 
-// register login logout routes
+export function brandRegisterDataValidator(req, res, next) {
+  const { email, password, password_confirm } = req.body;
+  if (!email || !password || !password_confirm) {
+      return res.status(422).json({ error: 'All fields are required' });
+  }
+
+  // Validate email format
+  if (!checkEmailFormat(email)) {
+    return res.status(422).json({ error: "Invalid email format" });
+  }
+
+  // Validate password length
+  const minPasswordLength = 8;
+  if (password.length < minPasswordLength) {
+    return res.status(422).json({ error: `Password must be at least ${minPasswordLength} characters long` });
+  }
+
+  // Validate password confirmation
+  if (password !== password_confirm) {
+    return res.status(422).json({ error: "Passwords do not match" });
+  }
+
+  next();
+}
+
+export function creativeRegisterDataValidator(req, res, next) {
+  const { email, password, password_confirm } = req.body;
+  if (!email || !password || !password_confirm) {
+      return res.status(422).json({ error: 'All fields are required' });
+  }
+
+  // Validate email format
+  if (!checkEmailFormat(email)) {
+    return res.status(422).json({ error: "Invalid email format" });
+  }
+
+  // Validate password length
+  const minPasswordLength = 8;
+  if (password.length < minPasswordLength) {
+    return res.status(422).json({ error: `Password must be at least ${minPasswordLength} characters long` });
+  }
+
+  // Validate password confirmation
+  if (password !== password_confirm) {
+    return res.status(422).json({ error: "Passwords do not match" });
+  }
+
+  next();
+}
+
+
+export function loginDataValidator(req, res, next) {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+      return res.status(422).json({ error: 'Email and password are required' });
+  }
+
+  if (!checkEmailFormat(email)) {
+    return res.status(422).json({ error: "Invalid email format" });
+  }
+
+  next();
+}

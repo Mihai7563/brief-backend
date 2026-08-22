@@ -3,17 +3,13 @@ import pool from '../db.js';
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { requireUniqueEmail } from '../middlewares/auth.js';
+import { creativeRegisterDataValidator, brandRegisterDataValidator, requireUniqueEmail, loginDataValidator } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginDataValidator, async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
-        }
 
         const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [email]);
 
@@ -37,18 +33,11 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/register', requireUniqueEmail, async (req, res) => {
+router.post('/register/brand', brandRegisterDataValidator, requireUniqueEmail, async (req, res) => {
+    const brandRoleId = await findRoleIdByName('brand');
 
     console.log(req.body)
     const { email, password, password_confirm } = req.body;
-
-    if (!email || !password || !password_confirm) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    if (password !== password_confirm) {
-        return res.status(400).json({ error: 'Passwords do not match' });
-    }
 
     const saltRounds = 12;
 
@@ -58,10 +47,32 @@ router.post('/register', requireUniqueEmail, async (req, res) => {
     const [rows] = await pool.query(`
         INSERT
             INTO users 
-            (email, password)
-        VALUES (?, ?)`,
-        [email, hashedPassword]);
+            (email, password, role_id)
+        VALUES (?, ?, ?)`,
+        [email, hashedPassword, brandRoleId]);
     
+    const token = createJWTToken(rows.insertId, email);
+    res.status(201).json({ message: 'User registered successfully', token });
+});
+
+router.post('/register/creative', creativeRegisterDataValidator, requireUniqueEmail, async (req, res) => {
+    const creativeRoleId = await findRoleIdByName('creative');
+
+    console.log(req.body)
+    const { email, password, password_confirm } = req.body;
+
+    const saltRounds = 12;
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log('Hashed password:', hashedPassword); 
+    
+    const [rows] = await pool.query(`
+        INSERT
+            INTO users 
+            (email, password, role_id)
+        VALUES (?, ?, ?)`,
+        [email, hashedPassword, creativeRoleId]);
+
     const token = createJWTToken(rows.insertId, email);
     res.status(201).json({ message: 'User registered successfully', token });
 });
@@ -74,6 +85,16 @@ function createJWTToken(userId, email) {
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
     );
+}
+
+
+async function findRoleIdByName(roleName) {
+    const rows = await pool.query(`SELECT id FROM roles WHERE name = ?`, [roleName]);
+    if (rows.length) {
+        return rows[0].id;
+    } else {
+        throw new Error(`Role ${roleName} not found`);
+    }
 }
 
 export default router;

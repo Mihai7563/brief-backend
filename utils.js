@@ -24,3 +24,8 @@ export function checkDateFormat(dateString){
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     return dateRegex.test(dateString);
 }
+
+export function checkEmailFormat(email) {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return emailRegex.test(email);
+}   

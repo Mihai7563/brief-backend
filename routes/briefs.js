@@ -1,5 +1,5 @@
 import { isNumber, isString, getCurrentDate, checkDateFormat } from '../utils.js';
-import { briefDataValidator, checkExistingBriefId } from '../middlewares/briefs.js';
+import { briefDataValidator, checkExistingBriefId, canCreateBrief } from '../middlewares/briefs.js';
 import { checkExistingCategoryId } from '../middlewares/categories.js';
 import pool from '../db.js';
 import express from 'express';
@@ -39,7 +39,7 @@ router.get('/:id', checkExistingBriefId, async (req, res) => {
     }
 });
 
-router.post('/', briefDataValidator, checkExistingCategoryId(false), async (req, res) => {
+router.post('/', canCreateBrief, briefDataValidator, checkExistingCategoryId(false), async (req, res) => {
     try {
         const {title, description, deadline, budget, category_id} = req.body;
         const publish_date = getCurrentDate();

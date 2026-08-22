@@ -1,4 +1,5 @@
 import { isNumber, isString, checkDateFormat, getCurrentDate } from "../utils.js";
+import bcrypt from "bcrypt";
 import pool from "../db.js";
 
 export function briefDataValidator(req, res, next) {
@@ -28,6 +29,16 @@ export async function checkExistingBriefId(req, res, next) {
     const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [id]);
     if (rows.length == 0) {
         return res.status(404).json({ error: 'Brief not found' });
+    }
+    next();
+}
+
+export async function canCreateBrief(req, res, next) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
     next();
 }
