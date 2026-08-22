@@ -1,6 +1,8 @@
 import { isNumber, isString, checkDateFormat, getCurrentDate } from "../utils.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import pool from "../db.js";
+import config from "../config.js";
 
 export function briefDataValidator(req, res, next) {
     const { title, description, deadline, budget, category_id, publish_date } = req.body;
@@ -40,5 +42,18 @@ export async function canCreateBrief(req, res, next) {
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    const userData = jwt.decode(token, process.env.JWT_SECRET);
+    if (!userData) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    console.log(token)
+    console.log(userData);
+    console.log(config.brandRoleName);
+    if(userData.role.name !== config.brandRoleName) {
+        return res.status(403).json({ error: `Forbidden: Only users with the ${config.brandRoleName} role can create briefs` });
+    }
+
     next();
 }

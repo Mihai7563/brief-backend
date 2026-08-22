@@ -20,7 +20,6 @@ export async function requireUniqueEmail(req, res, next) {
   }
 }
 
-// COMMON FUNCTION FOR BOTH REGISTER DATA VALIDATORS
 
 export function brandRegisterDataValidator(req, res, next) {
   const { email, password, password_confirm } = req.body;
