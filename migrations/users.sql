@@ -10,3 +10,6 @@ ALTER TABLE `users`
 
 ALTER TABLE `users`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `users`
+  ADD `created_at` TIMESTAMP NOT NULL AFTER `role_id`;

@@ -8,7 +8,10 @@ export function isNumber(fieldValue, decimals = false, maxDigits = 4) {
 
 //isValidTitle, isValidDesc etc
 export function isString(fieldValue, minLength = 1, maxLength = 255){
-    const stringRegex = new RegExp(`^[\\w\\s]{${minLength},${maxLength}}$`);
+    const stringRegex = new RegExp(
+        `^[\\p{L}\\p{N}\\p{P}\\s]{${minLength},${maxLength}}$`,
+        "u"
+    );
     return stringRegex.test(fieldValue);
 }
 
