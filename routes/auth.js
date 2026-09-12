@@ -1,4 +1,4 @@
-import { isNumber, isString } from '../utils.js';
+import { getUserDataFromToken } from '../utils.js';
 import pool from '../db.js';
 import express from 'express';
 import bcrypt from 'bcrypt';
@@ -8,9 +8,19 @@ import { creativeRegisterDataValidator, brandRegisterDataValidator, requireUniqu
 
 const router = express.Router();
 
-// router.get('/profile', async (req, res) => {
+router.get('/profile', async (req, res) => {
+    const userData = getUserDataFromToken(req);
+    if (!userData) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
 
-// });
+    const [rows] = await pool.query('SELECT * FROM users WHERE id = ? LIMIT 1', [userData.id]);
+    if (rows.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json(rows[0]);
+});
 
 
 router.post('/login', loginDataValidator, async (req, res) => {

@@ -5,6 +5,8 @@ import pool from "../db.js";
 import config from "../config.js";
 
 export function briefDataValidator(req, res, next) {
+    !req.headers.authorization && res.status(401).json({ error: 'Unauthorized' });
+
     const { title, description, deadline, budget, category_id, publish_date } = req.body;
     let errors = [];
     // CHECK IF TITLE AND DESCRIPTION ARE VALID STRINGS (255 CHARACTERS MAX per title and 1020 CHARACTERS MAX per description)
