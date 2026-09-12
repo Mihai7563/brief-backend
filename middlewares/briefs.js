@@ -15,10 +15,12 @@ export function briefDataValidator(req, res, next) {
     !isNumber(budget, true) && errors.push({ field: 'budget', message: 'Budget value is not a valid number' });
 
     !checkDateFormat(deadline) && errors.push({ field: 'deadline', message: 'Deadline value is not a valid date format' });
-
+    
     if(deadline < getCurrentDate()){
         errors.push({ field: 'deadline', message: 'Deadline value cannot be in the past' });
     }
+    
+    !checkDateFormat(publish_date) && errors.push({ field: 'publish_date', message: 'Publish date value is not a valid date format' });
 
     if (errors.length > 0) {
         return res.status(422).json({ errors });
@@ -48,9 +50,6 @@ export async function canCreateBrief(req, res, next) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    console.log(token)
-    console.log(userData);
-    console.log(config.brandRoleName);
     if(userData.role.name !== config.brandRoleName) {
         return res.status(403).json({ error: `Forbidden: Only users with the ${config.brandRoleName} role can create briefs` });
     }

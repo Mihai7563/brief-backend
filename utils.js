@@ -1,6 +1,5 @@
 export function isNumber(fieldValue, decimals = false, maxDigits = 4) {
     const testRegex = `^(0|[1-9]\d{0,${maxDigits - 1}})$`;
-    console.log(testRegex);
     const numberRegex = decimals ? new RegExp(`^(\\d+\\.?\\d*)$`) : new RegExp(`^(0|[1-9]\\d{0,${maxDigits - 1}})$`);
     return numberRegex.test(fieldValue);
 }

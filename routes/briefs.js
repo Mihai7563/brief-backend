@@ -62,7 +62,7 @@ router.post('/', canCreateBrief, briefDataValidator, checkExistingCategoryId(fal
 
 router.put('/:id', briefDataValidator, checkExistingBriefId, checkExistingCategoryId(false), async (req, res) => {
     const briefId = req.params.id;
-    const {title, description, deadline, budget, category_id} = req.body;
+    const {title, description, deadline, budget, category_id, publish_date} = req.body;
     try {
 
         const [rows] = await pool.query(`
@@ -71,13 +71,18 @@ router.put('/:id', briefDataValidator, checkExistingBriefId, checkExistingCatego
                 description = ?,
                 deadline = ?,
                 budget = ?,
-                category_id = ?
+                category_id = ?,
+                publish_date = ?
             WHERE id = ?
         `, [title, description, deadline, budget, category_id, publish_date, briefId]);
 
         if (rows.affectedRows === 0) {
             return res.status(404).json({ error: 'Brief not found' });
         }
+
+        console.log(`Brief with ID ${briefId} updated successfully.`);
+        console.log({ id: briefId, title, description, deadline, budget, category_id, publish_date });
+
         res.json({ id: briefId, title, description, deadline, budget, category_id, publish_date });
     } catch (error) {
         console.error('Error updating brief:', error);
