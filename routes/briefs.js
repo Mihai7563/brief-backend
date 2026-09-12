@@ -41,8 +41,7 @@ router.get('/:id', checkExistingBriefId, async (req, res) => {
 
 router.post('/', canCreateBrief, briefDataValidator, checkExistingCategoryId(false), async (req, res) => {
     try {
-        const {title, description, deadline, budget, category_id} = req.body;
-        const publish_date = getCurrentDate();
+        const {title, description, deadline, budget, category_id, publish_date} = req.body;
 
 
         // TODO COMMON FUNCTION FOR ALL INSERTS

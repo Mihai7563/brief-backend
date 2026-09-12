@@ -8,6 +8,11 @@ import { creativeRegisterDataValidator, brandRegisterDataValidator, requireUniqu
 
 const router = express.Router();
 
+// router.get('/profile', async (req, res) => {
+
+// });
+
+
 router.post('/login', loginDataValidator, async (req, res) => {
     try {
         const { email, password } = req.body;

@@ -1,6 +1,6 @@
-import { isNumber, isString, checkDateFormat, getCurrentDate } from "../utils.js";
+import { isNumber, isString, checkDateFormat, getCurrentDate, getUserDataFromToken } from "../utils.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 import pool from "../db.js";
 import config from "../config.js";
 
@@ -38,14 +38,8 @@ export async function checkExistingBriefId(req, res, next) {
 }
 
 export async function canCreateBrief(req, res, next) {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const userData = jwt.decode(token, process.env.JWT_SECRET);
+    const userData = getUserDataFromToken(req);
+    
     if (!userData) {
         return res.status(401).json({ error: 'Unauthorized' });
     }

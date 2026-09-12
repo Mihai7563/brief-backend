@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 export function isNumber(fieldValue, decimals = false, maxDigits = 4) {
     const testRegex = `^(0|[1-9]\d{0,${maxDigits - 1}})$`;
     const numberRegex = decimals ? new RegExp(`^(\\d+\\.?\\d*)$`) : new RegExp(`^(0|[1-9]\\d{0,${maxDigits - 1}})$`);
@@ -30,4 +32,20 @@ export function checkDateFormat(dateString){
 export function checkEmailFormat(email) {
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     return emailRegex.test(email);
-}   
+}
+
+export function getUserDataFromToken(req) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+
+    if (!token) {
+        return null;
+    }
+
+    const userData = jwt.decode(token, process.env.JWT_SECRET);
+    if (!userData) {
+        return null;
+    }
+
+    return userData;
+}
