@@ -1,4 +1,4 @@
-import { isNumber, isString, getCurrentDate, checkDateFormat } from '../utils.js';
+import { isNumber, isString, checkDateFormat } from '../utils.js';
 import { briefDataValidator, checkExistingBriefId, canCreateBrief } from '../middlewares/briefs.js';
 import { checkExistingCategoryId } from '../middlewares/categories.js';
 import pool from '../db.js';
@@ -79,8 +79,9 @@ router.put('/:id', briefDataValidator, checkExistingBriefId, checkExistingCatego
             return res.status(404).json({ error: 'Brief not found' });
         }
 
-        console.log(`Brief with ID ${briefId} updated successfully.`);
-        console.log({ id: briefId, title, description, deadline, budget, category_id, publish_date });
+        
+        // console.log(`Brief with ID ${briefId} updated successfully.`);
+        // console.log({ id: briefId, title, description, deadline, budget, category_id, publish_date });
 
         res.json({ id: briefId, title, description, deadline, budget, category_id, publish_date });
     } catch (error) {
