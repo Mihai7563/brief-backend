@@ -1,10 +1,12 @@
 import { isNumber, isString, checkDateFormat } from '../utils.js';
 import { briefDataValidator, checkExistingBriefId, canCreateBrief } from '../middlewares/briefs.js';
 import { checkExistingCategoryId } from '../middlewares/categories.js';
+import briefApplicationRoutes from './brief-applications.js';
 import pool from '../db.js';
 import express from 'express';
 const router = express.Router();
 
+router.use('/:briefId/applications', briefApplicationRoutes);
 
 router.get('/', async (req, res) => {
     try {
@@ -25,8 +27,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', checkExistingBriefId, async (req, res) => {
-    const briefId = req.params.id;
+router.get('/:briefId', checkExistingBriefId, async (req, res) => {
+    const briefId = req.params.briefId;
     try {
         const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [briefId]);
         if (rows.length === 0) {
@@ -59,8 +61,9 @@ router.post('/', canCreateBrief, briefDataValidator, checkExistingCategoryId(fal
     }
 });
 
-router.put('/:id', briefDataValidator, checkExistingBriefId, checkExistingCategoryId(false), async (req, res) => {
-    const briefId = req.params.id;
+
+router.put('/:briefId', briefDataValidator, checkExistingBriefId, checkExistingCategoryId(false), async (req, res) => {
+    const briefId = req.params.briefId;
     const {title, description, deadline, budget, category_id, publish_date} = req.body;
     try {
 
@@ -90,8 +93,8 @@ router.put('/:id', briefDataValidator, checkExistingBriefId, checkExistingCatego
     }
 });
 
-router.delete('/:id', checkExistingBriefId, async (req, res) => {
-    const briefId = req.params.id;
+router.delete('/:briefId', checkExistingBriefId, async (req, res) => {
+    const briefId = req.params.briefId;
     try {
         const [rows] = await pool.query('DELETE FROM briefs WHERE id = ?', [briefId]);
         if (rows.affectedRows === 0) {

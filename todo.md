@@ -2,7 +2,7 @@
 
 ## BRIEFS
 - On update, check if user is the owner
-- Creatives can apply to briefs
+- Creatives can apply to briefs -> (update) classes for applications??????
 
 ## REGISTER
 - Email verification

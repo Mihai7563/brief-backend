@@ -23,8 +23,8 @@ export async function briefDataValidator(req, res, next) {
         errors.push({ field: 'deadline', message: 'Deadline value cannot be in the past' });
     }
 
-    const { id } = req.params;
-    const [rows] = await pool.query(`SELECT DATE_FORMAT(publish_date, '%Y-%m-%d') as publish_date FROM briefs WHERE id = ?`, [id]);
+    const { briefId } = req.params;
+    const [rows] = await pool.query(`SELECT DATE_FORMAT(publish_date, '%Y-%m-%d') as publish_date FROM briefs WHERE id = ?`, [briefId]);
 
     if(rows[0] && rows[0].publish_date < currentDate && publish_date !== rows[0].publish_date){
         errors.push({ field: 'publish_date', message: 'Cannot update brief publish date if the original date is in the past' });
@@ -40,8 +40,8 @@ export async function briefDataValidator(req, res, next) {
 
 
 export async function checkExistingBriefId(req, res, next) {
-    const { id } = req.params;
-    const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [id]);
+    const { briefId } = req.params;
+    const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [briefId]);
     if (rows.length == 0) {
         return res.status(404).json({ error: 'Brief not found' });
     }
