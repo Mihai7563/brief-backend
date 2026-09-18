@@ -2,6 +2,7 @@ import express from 'express';
 import briefRoutes from './routes/briefs.js';
 import categoryRoutes from './routes/categories.js';
 import authRoutes from './routes/auth.js';
+import applicationsRoutes from './routes/applications.js';
 
 const app = express();
 const port = 3000;
@@ -12,6 +13,7 @@ try {
   app.use('/api/briefs', briefRoutes);
   app.use('/api/categories', categoryRoutes);
   app.use('/api/auth', authRoutes);
+  app.use('/api/applications', applicationsRoutes);
 } catch (error) {
   console.error('Error setting up routes:', error);
   process.exit(1); // Exit the application if routes cannot be set up

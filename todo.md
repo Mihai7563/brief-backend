@@ -2,8 +2,7 @@
 
 ## BRIEFS
 - On update, check if user is the owner
-- Creatives can apply to briefs
-- Mihai - restrict publish date change if publish date in database is in the past
+- Creatives can apply to briefs -> (update) classes for applications??????
 
 ## REGISTER
 - Email verification
