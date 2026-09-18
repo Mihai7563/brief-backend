@@ -48,6 +48,7 @@ export async function checkExistingBriefId(req, res, next) {
     next();
 }
 
+
 export async function canCreateBrief(req, res, next) {
     const userData = getUserDataFromToken(req);
     
@@ -57,6 +58,24 @@ export async function canCreateBrief(req, res, next) {
 
     if(userData.role.name !== config.brandRoleName) {
         return res.status(403).json({ error: `Forbidden: Only users with the ${config.brandRoleName} role can create briefs` });
+    }
+
+    next();
+}
+
+
+export async function isOwner(req, res, next) {
+    const userData = getUserDataFromToken(req);
+    const briefId = req.params.id;
+
+    if (!userData) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ? AND user_id = ?', [briefId, userData.id]);
+
+    if (rows.length === 0) {
+        return res.status(403).json({ error: 'You can only modify your own briefs' });
     }
 
     next();

@@ -1,5 +1,5 @@
 import { isNumber, isString, checkDateFormat } from '../utils.js';
-import { briefDataValidator, checkExistingBriefId, canCreateBrief } from '../middlewares/briefs.js';
+import { briefDataValidator, checkExistingBriefId, canCreateBrief, isOwner } from '../middlewares/briefs.js';
 import { checkExistingCategoryId } from '../middlewares/categories.js';
 import briefApplicationRoutes from './brief-applications.js';
 import pool from '../db.js';
@@ -62,7 +62,7 @@ router.post('/', canCreateBrief, briefDataValidator, checkExistingCategoryId(fal
 });
 
 
-router.put('/:briefId', briefDataValidator, checkExistingBriefId, checkExistingCategoryId(false), async (req, res) => {
+router.put('/:briefId', checkExistingBriefId, isOwner, briefDataValidator, checkExistingCategoryId(false), async (req, res) => {
     const briefId = req.params.briefId;
     const {title, description, deadline, budget, category_id, publish_date} = req.body;
     try {
@@ -93,7 +93,7 @@ router.put('/:briefId', briefDataValidator, checkExistingBriefId, checkExistingC
     }
 });
 
-router.delete('/:briefId', checkExistingBriefId, async (req, res) => {
+router.delete('/:briefId', isOwner, checkExistingBriefId, async (req, res) => {
     const briefId = req.params.briefId;
     try {
         const [rows] = await pool.query('DELETE FROM briefs WHERE id = ?', [briefId]);

@@ -1,8 +1,7 @@
 # TODO
 
 ## BRIEFS
-- On update, check if user is the owner
-- Creatives can apply to briefs -> (update) classes for applications??????
+- (Classes for applications??????)
 
 ## REGISTER
 - Email verification
