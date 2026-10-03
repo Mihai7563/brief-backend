@@ -42,6 +42,9 @@ export async function briefDataValidator(req, res, next) {
 export function checkExistingBriefId(getId) {
     return async (req, res, next) => {
         const id = getId(req);
+        if(typeof id !== 'number'){
+            return res.status(422).json({ error: 'Invalid brief id' });
+        }
         const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [id]);
         if (rows.length == 0) {
             return res.status(404).json({ error: 'Brief not found' });
