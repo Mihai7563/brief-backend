@@ -39,13 +39,15 @@ export async function briefDataValidator(req, res, next) {
 }
 
 
-export async function checkExistingBriefId(req, res, next) {
-    const { briefId } = req.params;
-    const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [briefId]);
-    if (rows.length == 0) {
-        return res.status(404).json({ error: 'Brief not found' });
+export function checkExistingBriefId(getId) {
+    return async (req, res, next) => {
+        const id = getId(req);
+        const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [id]);
+        if (rows.length == 0) {
+            return res.status(404).json({ error: 'Brief not found' });
+        }
+        next();
     }
-    next();
 }
 
 

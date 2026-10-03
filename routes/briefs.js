@@ -1,12 +1,10 @@
 import { isNumber, isString, checkDateFormat } from '../utils.js';
 import { briefDataValidator, checkExistingBriefId, canCreateBrief, isOwner } from '../middlewares/briefs.js';
 import { checkExistingCategoryId } from '../middlewares/categories.js';
-import briefApplicationRoutes from './brief-applications.js';
 import pool from '../db.js';
 import express from 'express';
-const router = express.Router();
 
-router.use('/:briefId/applications', briefApplicationRoutes);
+const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
@@ -27,10 +25,9 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:briefId', checkExistingBriefId, async (req, res) => {
-    const briefId = req.params.briefId;
+router.get('/:id', checkExistingBriefId(req => req.params.id), async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [briefId]);
+        const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [req.params.id]);
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Brief not found' });
         }
@@ -62,8 +59,8 @@ router.post('/', canCreateBrief, briefDataValidator, checkExistingCategoryId(fal
 });
 
 
-router.put('/:briefId', checkExistingBriefId, isOwner, briefDataValidator, checkExistingCategoryId(false), async (req, res) => {
-    const briefId = req.params.briefId;
+router.put('/:id', checkExistingBriefId(req => req.params.id), isOwner, briefDataValidator, checkExistingCategoryId(false), async (req, res) => {
+    const briefId = req.params.id;
     const {title, description, deadline, budget, category_id, publish_date} = req.body;
     try {
 
@@ -93,14 +90,13 @@ router.put('/:briefId', checkExistingBriefId, isOwner, briefDataValidator, check
     }
 });
 
-router.delete('/:briefId', isOwner, checkExistingBriefId, async (req, res) => {
-    const briefId = req.params.briefId;
+router.delete('/:id', isOwner, checkExistingBriefId(req => req.params.id), async (req, res) => {
     try {
-        const [rows] = await pool.query('DELETE FROM briefs WHERE id = ?', [briefId]);
+        const [rows] = await pool.query('DELETE FROM briefs WHERE id = ?', [req.params.id]);
         if (rows.affectedRows === 0) {
             return res.status(404).json({ error: 'Brief not found' });
         }
-        res.json({ id: briefId });
+        res.json({ id: req.params.id });
     } catch (error) {
         console.error('Error deleting brief:', error);
         res.status(500).json({ error: 'Internal server error' });

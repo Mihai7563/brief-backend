@@ -5,11 +5,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
 import { checkExistingBriefId } from '../middlewares/briefs.js';
-import { isOwner, checkExistingApplicationId } from '../middlewares/applications.js';
+import { isOwner, checkExistingApplicationId, canApplyToBrief, checkUniqueApplication } from '../middlewares/applications.js';
 
 const router = express.Router();
-
-// ROUTES FOR APPLICATIONS NOT TIED TO A SPECIFIC BRIEF
 
 router.get('/:id', checkExistingApplicationId, async (req, res) => {
     try {
@@ -25,6 +23,32 @@ router.get('/:id', checkExistingApplicationId, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 })
+
+
+router.get('/', checkExistingBriefId, async (req, res) => {
+    try {
+        const briefId = req.query.briefId;
+        const [rows] = await pool.query('SELECT * FROM applications WHERE brief_id = ?', [briefId]);
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching applications:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+router.post('/', checkExistingBriefId(req => req.body.briefId), canApplyToBrief, checkUniqueApplication, async (req, res) => {
+    try {
+        const userData = getUserDataFromToken(req);
+        const { briefId, demo = null } = req.body;
+
+        const [rows] = await pool.query(`INSERT INTO applications (user_id, brief_id, demo) VALUES (?, ?, ?)`, [userData.id, briefId, demo]);
+        res.status(201).json({ id: rows.insertId, user_id: userData.id, brief_id: briefId });
+    } catch (error) {
+        console.error('Error applying to brief:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 
 router.put('/:id', checkExistingApplicationId, isOwner, async (req, res) => {
