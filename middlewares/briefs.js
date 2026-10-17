@@ -39,9 +39,9 @@ export async function briefDataValidator(req, res, next) {
 }
 
 
-export function checkExistingBriefId(getId) {
+export function checkExistingBriefId(extractBriefId) {
     return async (req, res, next) => {
-        const id = getId(req);
+        const id = extractBriefId(req);
         if(typeof id !== 'number'){
             return res.status(422).json({ error: 'Invalid brief id' });
         }

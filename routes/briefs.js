@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', checkExistingBriefId(req => req.params.id), async (req, res) => {
+router.get('/:id', checkExistingBriefId(req => Number(req.params.id)), async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM briefs WHERE id = ?', [req.params.id]);
         if (rows.length === 0) {
